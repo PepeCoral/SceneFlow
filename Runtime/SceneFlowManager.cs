@@ -7,7 +7,7 @@ namespace SceneFlow {
 
     public class SceneFlowManager : MonoBehaviour
     {
-        public static SceneFlowManager Instance { get; private set;}
+        private static SceneFlowManager Instance { get; set;}
 
         private void Awake()
         {
@@ -19,6 +19,17 @@ namespace SceneFlow {
             Instance = this;
         }
 
+     
+        private void OnDisable()
+        {
+            Instance = null;
+        }
+
+        private void OnDestroy()
+        {
+            Instance = null;
+        }
+
         [SerializeField] private Animator animator;
 
         /// <summary>
@@ -26,15 +37,43 @@ namespace SceneFlow {
         /// </summary>
         /// <param sceneName="Scene name">Scene Name.</param>
         public void LoadScene(string sceneName){
-            StartCoroutine(LoadSceneRoutine(sceneName));
+            try
+            {
+                Instance.LoadSceneOnInstance(sceneName);
+            }
+            catch (System.NullReferenceException)
+            {
+                Debug.LogError("No SceneFlowManager is active");
+                throw;
+            }
         }
 
         /// <summary>
         /// LoadScene facilitates smooth scene transitions in Unity, playing an animation transition before loading the specified scene.  
         /// </summary>
         /// <param sceneBuildIndex="Scene Build Index">Scene Name.</param>
-        public void LoadScene(int sceneBuildIndex){
+        public static void LoadScene(int sceneBuildIndex)
+        {
+            try
+            {
+                Instance.LoadSceneOnInstance(sceneBuildIndex);
+            }
+            catch (System.NullReferenceException)
+            {
+                Debug.LogError("No SceneFlowManager is active");
+                throw;
+            }
+        }
+
+
+        private void LoadSceneOnInstance(int sceneBuildIndex)
+        {
             StartCoroutine(LoadSceneRoutine(sceneBuildIndex));
+        }
+
+        private void LoadSceneOnInstance(string sceneName)
+        {
+            StartCoroutine(LoadSceneRoutine(sceneName));
         }
 
         private IEnumerator LoadSceneRoutine(string sceneName) {
@@ -50,6 +89,10 @@ namespace SceneFlow {
             SceneManager.LoadScene(sceneBuildIndex);
         }
 
+
+        /// <summary>
+        /// Calculates the time of the current "Start" clip.  
+        /// </summary>
         private float animationTime()
         {
             float time = 1f;
