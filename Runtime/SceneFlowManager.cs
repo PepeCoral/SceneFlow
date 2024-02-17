@@ -9,6 +9,9 @@ namespace SceneFlow {
     {
         private static SceneFlowManager Instance { get; set;}
 
+        private Animator animator;
+
+
         private void Awake()
         {
 
@@ -17,6 +20,9 @@ namespace SceneFlow {
                 Destroy(Instance);
             }
             Instance = this;
+
+
+            animator = GetComponentInChildren<Animator>();
         }
 
      
@@ -30,8 +36,7 @@ namespace SceneFlow {
             Instance = null;
         }
 
-        [SerializeField] private Animator animator;
-
+       
         /// <summary>
         /// LoadScene facilitates smooth scene transitions in Unity, playing an animation transition before loading the specified scene.  
         /// </summary>
