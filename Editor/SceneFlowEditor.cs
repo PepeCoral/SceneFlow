@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.Animations;
 using System.IO;
 
+
 public class SceneFlowEditor : MonoBehaviour
 {
     [MenuItem("Assets/Create/SceneFlow Transition")]
@@ -14,7 +15,9 @@ public class SceneFlowEditor : MonoBehaviour
         string currentPath = AssetDatabase.GetAssetPath(Selection.activeObject);
 
         // Creates the controller
-        var controller = UnityEditor.Animations.AnimatorController.CreateAnimatorControllerAtPath(currentPath+ Path.DirectorySeparatorChar + "Transition.controller");
+        var controller = new AnimatorController();
+        controller.AddLayer("root");
+        //var controller = UnityEditor.Animations.AnimatorController.CreateAnimatorControllerAtPath(currentPath+ Path.DirectorySeparatorChar + "Transition.controller");
 
         // Add parameters
         controller.AddParameter("Start", AnimatorControllerParameterType.Trigger);
@@ -36,14 +39,15 @@ public class SceneFlowEditor : MonoBehaviour
         transition.duration = 0;
 
         AnimationClip startClip = new AnimationClip();
-        AssetDatabase.CreateAsset(startClip, currentPath + Path.DirectorySeparatorChar +"Start.anim");
+        ProjectWindowUtil.CreateAsset(startClip, currentPath + Path.DirectorySeparatorChar +"Start.anim");
 
         AnimationClip endClip = new AnimationClip();
-        AssetDatabase.CreateAsset(endClip, currentPath + Path.DirectorySeparatorChar + "End.anim");
+        ProjectWindowUtil.CreateAsset(endClip, currentPath + Path.DirectorySeparatorChar + "End.anim");
 
         startState.motion = startClip;
         endState.motion = endClip;
 
+        ProjectWindowUtil.CreateAsset(controller, currentPath + Path.DirectorySeparatorChar + "Transition.controller");
     }
 
 
